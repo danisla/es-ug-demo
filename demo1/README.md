@@ -1,8 +1,6 @@
 # Deploying Elasticsearch with Helm and Regional Persistent Disks
 
-<a href="https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fdanisla%2Fes-ug-demo.git&amp;cloudshell_working_dir=demo1&amp;cloudshell_image=gcr.io%2Fcloud-solutions-group%2Fterraform-helm%3Alatest&amp;cloudshell_tutorial=.%2FREADME.md" target="_blank">
-  <img alt="Open in Cloud Shell" src="//gstatic.com/cloudssh/images/open-btn.svg" style="max-height: 44px; margin: 32px auto; max-width: 100%;">
-</a>
+[![button](http://gstatic.com/cloudssh/images/open-btn.png)](https://console.cloud.google.com/cloudshell/open?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fdanisla%2Fes-ug-demo.git&amp;cloudshell_working_dir=demo1&amp;cloudshell_image=gcr.io%2Fcloud-solutions-group%2Fterraform-helm%3Alatest&amp;cloudshell_tutorial=.%2FREADME.md)
 
 Goals:
 
