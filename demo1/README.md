@@ -60,7 +60,7 @@ helm version
 2. Deploy Elasticsearch with Helm:
 
 ```bash
-STORAGE_CLASS=repd-west1-b-c
+STORAGE_CLASS=repd-west1-b-c && \
 helm install stable/elasticsearch --name es-ug-demo \
   --set data.persistence.storageClass=${STORAGE_CLASS} \
   --set data.persistence.size=100Gi \
@@ -68,22 +68,33 @@ helm install stable/elasticsearch --name es-ug-demo \
   --set data.heapSize=7680m
 ```
 
-3. Deploy Cerebro with Helm:
+3. Wait for `es-ug-demo-elasticsearch-data-0` and `es-ug-demo-elasticsearch-data-1` pods to become ready:
+
+```
+watch -n 5 kubectl get pod
+```
+
+## Deploy Cerebro
+
+1. Deploy Cerebro with Helm:
 
 ```bash
 helm install stable/cerebro --name cerebro-demo \
   --set config.hosts[0].host=http://es-ug-demo-elasticsearch-client:9200,config.hosts[0].name=es-ug-demo
 ```
 
-4. Open cerebro dashboard:
+2. Open cerebro dashboard:
 
 ```bash
 export POD_NAME=$(kubectl get pods --namespace default -l "app=cerebro,release=cerebro-demo" -o jsonpath="{.items[0].metadata.name}")
-echo "Visit http://127.0.0.1:9000 to use your application"
-kubectl port-forward $POD_NAME 9000:9000
+kubectl port-forward $POD_NAME 9000:9000 &
 ```
 
-5. Ingest data:
+3. Click the __Web Preview__ button in Cloud Shell then Change Port to 9000 to open the Cerebro UI.
+
+## Ingest Sample Data
+
+1. Ingest data:
 
 ```bash
 ./ingest.sh es-ug-demo-elasticsearch-client
