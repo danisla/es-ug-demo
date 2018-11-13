@@ -33,7 +33,7 @@ gcloud container node-pools create es-data \
   --node-version=${NODE_VERSION} \
   --machine-type=n1-highmem-4 \
   --node-labels=es-node=data \
-  --num-nodes=1 \
+  --num-nodes=2 \
   --scopes=cloud-platform
 ```
 
@@ -77,7 +77,6 @@ helm install stable/elasticsearch --name es-ug-demo \
   --set master.nodeSelector.es-node=control \
   --set data.nodeSelector.es-node=data \
   --set data.replicas=2 \
-  --set data.heapSize=13312m \
   --set data.persistence.size=100Gi \
   --set data.persistence.storageClass=repd-west1-b-c
 ```
@@ -122,3 +121,15 @@ kubectl port-forward $POD_NAME 9000:9000 >/dev/null &
 ```
 
 ## Simulate Zone Failure
+
+1. In the Cloud Console, delete all instances for the us-west1-b group.
+
+2. Observe in the Cerebro dashboard that the cluster becomes __RED__ but then after about a minute is green again.
+
+3. Verify that the data node moved to the other replicated zone:
+
+```bash
+kubectl get pods -o wide
+```
+
+The pod was able to change nodes to a new zone and take the data with it because the persistent disk is being replicated.
