@@ -43,17 +43,7 @@ gcloud container node-pools create es-data \
 gcloud container clusters get-credentials --region us-west1 es-ug-demo
 ```
 
-## Regional PD Storage Class
-
-1. Create the storage class for `us-west1-b` and `us-west1-c`:
-
-```bash
-kubectl apply -f storageclass.yaml
-```
-
-## Deploy Elasticsearch
-
-1. Install tiller:
+3. Install tiller:
 
 ```bash
 kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=$(gcloud config get-value account);
@@ -65,10 +55,21 @@ until ( helm version --tiller-connection-timeout=1 > /dev/null 2>&1 ); do
     sleep 2;
 done;
 echo "Helm install complete";
+helm repo update
 helm version
 ```
 
-2. Deploy Elasticsearch with Helm:
+## Regional PD Storage Class
+
+1. Create the storage class for `us-west1-b` and `us-west1-c`:
+
+```bash
+kubectl apply -f storageclass.yaml
+```
+
+## Deploy Elasticsearch
+
+1. Deploy Elasticsearch with Helm:
 
 ```bash
 helm install stable/elasticsearch --name es-ug-demo \
@@ -81,7 +82,7 @@ helm install stable/elasticsearch --name es-ug-demo \
   --set data.persistence.storageClass=repd-west1-b-c
 ```
 
-3. Wait for `es-ug-demo-elasticsearch-data-0` and `es-ug-demo-elasticsearch-data-1` pods to become ready:
+2. Wait for `es-ug-demo-elasticsearch-data-0` and `es-ug-demo-elasticsearch-data-1` pods to become ready:
 
 ```bash
 watch -n 5 kubectl get pod -o wide
