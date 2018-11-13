@@ -37,17 +37,7 @@ gcloud container clusters get-credentials --region us-west1 es-ug-demo
 1. Create the storage class for `us-west1-b` and `us-west1-c`:
 
 ```bash
-kubectl apply -f - <<'EOF'
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: repd-west1-b-c
-provisioner: kubernetes.io/gce-pd
-parameters:
-  type: pd-standard
-  replication-type: regional-pd
-  zones: us-west1-b, us-west1-c
-EOF
+kubectl apply -f storageclass.yaml
 ```
 
 ## Deploy Elasticsearch
