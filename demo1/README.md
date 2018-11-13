@@ -8,7 +8,7 @@ Goals:
 2. Load dataset
 3. Simulate zonal outage
 
-## Setup
+## Custer Setup
 
 1. Create regional cluster:
 
@@ -26,7 +26,15 @@ gcloud container clusters create ${CLUSTER_NAME} \
   --scopes=cloud-platform
 ```
 
-2. Create the storage class for `us-west1-b` and `us-west1-c`:
+2. Get credentials:
+
+```bash
+gcloud container clusters get-credentials --region us-west1 es-ug-demo
+```
+
+## Regional PD Storage Class
+
+1. Create the storage class for `us-west1-b` and `us-west1-c`:
 
 ```bash
 kubectl apply -f - <<EOF
@@ -42,13 +50,9 @@ parameters:
 EOF
 ```
 
-3. Install helm:
+## Deploy Elasticsearch
 
-```bash
-curl https://raw.githubusercontent.com/helm/helm/master/scripts/get > get_helm.sh
-chmod 700 get_helm.sh
-./get_helm.sh
-```
+1. Install tiller:
 
 ```bash
 kubectl create clusterrolebinding default-admin --clusterrole=cluster-admin --user=$(gcloud config get-value account);
@@ -63,7 +67,7 @@ echo "Helm install complete";
 helm version
 ```
 
-3. Deploy Elasticsearch with Helm:
+2. Deploy Elasticsearch with Helm:
 
 ```bash
 STORAGE_CLASS=repd-west1-b-c
@@ -74,14 +78,14 @@ helm install stable/elasticsearch --name es-ug-demo \
   --set data.heapSize=7680m
 ```
 
-4. Deploy Cerebro with Helm:
+3. Deploy Cerebro with Helm:
 
 ```bash
 helm install stable/cerebro --name cerebro-demo \
   --set config.hosts[0].host=http://es-ug-demo-elasticsearch-client:9200,config.hosts[0].name=es-ug-demo
 ```
 
-5. Open cerebro dashboard:
+4. Open cerebro dashboard:
 
 ```bash
 export POD_NAME=$(kubectl get pods --namespace default -l "app=cerebro,release=cerebro-demo" -o jsonpath="{.items[0].metadata.name}")
@@ -89,28 +93,10 @@ echo "Visit http://127.0.0.1:9000 to use your application"
 kubectl port-forward $POD_NAME 9000:9000
 ```
 
-6. Ingest data:
+5. Ingest data:
 
 ```bash
 ./ingest.sh es-ug-demo-elasticsearch-client
 ```
 
-7. Get the name of the instance group for the pod:
-
-```bash
-NODE=$(kubectl get pods -l app=elasticsearch,component=data -o jsonpath='{.items[0].spec.nodeName}')
-
-ZONE=$(kubectl get node $NODE -o jsonpath="{.metadata.labels['failure-domain\.beta\.kubernetes\.io/zone']}")
-
-IG=$(gcloud compute instance-groups list --filter="name~gke-.*-default-pool zone:(${ZONE})" --format='value(name)')
-
-echo "Pod is currently on node ${NODE}"
-
-echo "Instance group to delete: ${IG} for zone: ${ZONE}"
-```
-
-8. Delete the instance group:
-
-```bash
-gcloud compute instance-groups managed delete ${IG} --zone ${ZONE}
-```
+## Simulate Zone Failure
