@@ -55,8 +55,8 @@ until ( helm version --tiller-connection-timeout=1 > /dev/null 2>&1 ); do
     sleep 2;
 done;
 echo "Helm install complete";
-helm repo update
-helm version
+helm repo update;
+helm version;
 ```
 
 ## Regional PD Storage Class
