@@ -107,10 +107,10 @@ watch -n 5 kubectl get pod -o wide
 
 ```bash
 POD_NAME=$(kubectl get pods --namespace default -l "app=cerebro,release=cerebro-demo" -o jsonpath="{.items[0].metadata.name}") && \
-kubectl port-forward $POD_NAME 9000:9000 >/dev/null &
+kubectl port-forward $POD_NAME 8080:9000 >/dev/null &
 ```
 
-4. Click the __Web Preview__ button in Cloud Shell then Change Port to 9000 to open the Cerebro UI.
+4. Click the __Web Preview__ button in Cloud Shell then Change Port to 8080 to open the Cerebro UI.
 
 ## Ingest Sample Data
 
