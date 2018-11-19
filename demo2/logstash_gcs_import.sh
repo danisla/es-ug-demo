@@ -1,8 +1,7 @@
 #!/bin/bash
 
-BUCKET=$1
-
-[[ -z "${BUCKET}" ]] && echo "USAGE: $0 <bucket>" && exit 1
+BUCKET=${1?"USAGE: $0 <bucket>"}
+ES_HOST=${2:-"http://localhost:9200"}
 
 function cleanup() {
   kubectl delete pod logstash >/dev/null 2>&1
@@ -22,14 +21,18 @@ input {
   google_cloud_storage {
     interval => 5
     bucket_id => "${BUCKET}"
-    codec => "json_lines"
+    codec => "json"
     file_matches => "the-met-.*\.json"
     json_key_file => ""
     delete => false
   }
 }
-# TODO filter?
-output { stdout { codec => rubydebug } }
+
+output {
+  elasticsearch {
+    hosts => ["${ES_HOST}"]
+  }
+}
 EOF
 
 printf "INFO: Logstash pipeline:\n\n"
@@ -37,7 +40,7 @@ cat logstash.conf
 
 printf "\nINFO: Starting logstash"
 
-bin/logstash --debug -f logstash.conf
+bin/logstash -f logstash.conf
 
 echo "INFO: Done"
 EOM

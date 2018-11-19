@@ -1,8 +1,6 @@
 #!/bin/bash
 
-BUCKET=$1
-
-[[ -z "${BUCKET}" ]] && echo "USAGE: $0 <bucket>" && exit 1
+BUCKET=${1?"USAGE: $0 <bucket>"}
 
 function cleanup() {
   kubectl delete pod logstash >/dev/null 2>&1
